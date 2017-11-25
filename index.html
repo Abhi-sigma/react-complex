@@ -1,0 +1,209 @@
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Page Title</title>
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+		<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+		<script  src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.min.js"></script>
+	</head>
+	<body>
+		<div id="root"></div>
+
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+		<script type="text/babel">
+			function Name(props){
+			return (
+			<div>
+				<fieldset>
+					<label>First Name</label>
+					<input onChange ={props.handleChange} name="firstname" type ="text"/>
+				</fieldset>
+				<fieldset>
+					<label>Last Name </label>
+					<input  onChange = {props.handleChange} name="lastname" type ="text"/>
+				</fieldset>
+			</div>
+			)
+
+		}
+
+		function Activity(props){
+		var options=props.options.map(function(item,index) {
+		return (
+		<option  name ={index} >{item}</option>
+		)
+	})
+	//console.log(options);
+	return(
+	<div>
+		<label>Select Activity</label>
+		<select name= "activity" onChange = {props.handleChange}>
+			{options}
+		</select>
+	</div>
+	)
+}
+
+function Restrictions(props){
+var options = props.options.map(function(item){
+return(
+<div>
+	<input name="restrictions" onChange ={props.changeHandler} type="checkbox"
+	defaultUnChecked value={item} />
+	{item}
+</div>
+)
+})
+//console.log(options)
+return (
+<div>
+	{options}
+</div>
+)
+
+}
+
+function RecordsTable(props){
+var style={
+"width":"16%",
+"margin":"5px",
+"float":"left"
+}
+return(
+<div>
+	<div style={style}>Remove</div>
+	<div style={style}>First Name</div>
+	<div style={style}>Last Name</div>
+	<div style={style}>Activities</div>
+	<div style={style}>Restrictions</div>
+</div>
+)
+
+}
+
+function Records(props){
+var style={
+"width":"16%",
+"margin":"5px",
+"float":"left",
+}
+var collection=props.array_records //array is a array of array
+var to_render_array=[];
+// alert("hello")
+for(let i=0;i<collection.length;i++){
+to_render_array.push(
+
+<div style={{width:100+"%",clear:"both"}}>
+	<div style={style} key={i} ><button onClick={props.removeHandler.bind(this,i)} >x</button></div>
+	<div style={style} >{collection[i].firstname}</div>
+	<div style={style} >{collection[i].lastname}</div>
+	<div style={style} >{collection[i].activity}</div>
+	<div style={style} >{collection[i].restrictions}</div>
+</div>
+
+
+);
+
+
+
+}
+return(
+<div>
+	{to_render_array}
+</div>
+)
+
+}
+
+
+
+
+
+
+function Submit(props){
+return <button type ="submit" onClick={props.addRecords}>Submit</button>
+}
+
+class App extends React.Component{
+constructor(props){
+super(props)
+this.state= {records:[],currentRecord:[{firstname:"",lastname:"",activity:"",restrictions:[]}]};
+this.addRecords=this.addRecords.bind(this);
+this.handleChange=this.handleChange.bind(this);
+this.removeHandler=this.removeHandler.bind(this);
+}
+
+addRecords(){
+var recordCopy=this.state.records.slice();  //makes a copy of array
+//alert(JSON.stringify(recordCopy));
+recordCopy.push(this.state.currentRecord[0]);
+//alert(JSON.stringify(this.state.currentRecord))
+this.setState({records:recordCopy,currentRecord:[{firstname:"",lastname:"",activity:"",restrictions:[]}]},
+function(){
+//console.log(JSON.stringify(this.state.records))
+})
+
+}
+
+handleChange(event){
+// alert(event.target.value);
+var formFieldName=event.target.name;
+// alert(formFieldName)
+if(event.target.type !== 'checkbox'){
+this.state.currentRecord[0][formFieldName]=event.target.value;
+}
+else{
+this.state.currentRecord[0][formFieldName].push(event.target.value)
+
+}
+//console.log(JSON.stringify(this.state.currentRecord[0]))
+
+
+}
+
+removeHandler(index){
+//alert("remove clicked");
+var recordCopy=this.state.records.slice();
+console.log(index); //makes a copy of array
+recordCopy.splice(index,1);
+console.log(recordCopy);
+this.setState({records:recordCopy})
+
+
+}
+render(){
+return (
+<div>
+	<Name handleChange={this.handleChange.bind(this)}/>
+	<fieldset>
+		<Activity handleChange ={this.handleChange} options={["Science Lab","Swimming","Painting","Cooking"]}/>
+	</fieldset>
+	<fieldset>
+		<Restrictions options={["Dietary Restrictions","Medical Needs","Physical Disabilities"]} changeHandler = {this.handleChange} />
+	</fieldset>
+	<Submit addRecords={this.addRecords}/>
+	<RecordsTable/>
+	<Records array_records={this.state.records} removeHandler={this.removeHandler}/>
+</div>
+)
+}
+}
+
+ReactDOM.render(
+<App/>,
+document.getElementById("root")
+)
+
+</script>
+</body>
+</html>
